@@ -21,6 +21,18 @@
 ### 1.2 NIO non-blocking IO
 - [深入理解Java NIO](https://www.cnblogs.com/geason/p/5774096.html)
 
-
 ### 1.3 RPC
 
+### 1.4 codec
+- [Netty In Action中文版 - 第七章：编解码器Codec]: https://blog.csdn.net/abc_key/article/details/38041143
+- [Netty codec框架]: https://www.cnblogs.com/leesf456/p/6905999.html
+
+## 2. 疑问
+
+### 2.1 ServerSocketChannel 区别
+- EpollServerSocketChannel
+- KQueueServerSocketChannel
+- NioServerSocketChannel
+- OioServerSocketChannel: BIO, **deprecated！**
+
+### 2.2 io.netty.buffer.ByteBuf?

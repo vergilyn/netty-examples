@@ -1,6 +1,7 @@
 package com.vergilyn.examples;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -21,19 +22,19 @@ public class NettyServer {
 
         NioEventLoopGroup boss = new NioEventLoopGroup();
         NioEventLoopGroup worker = new NioEventLoopGroup();
-        serverBootstrap.group(boss, worker)
-                .channel(NioServerSocketChannel.class)
-                .childHandler(new ChannelInitializer<NioSocketChannel>() {
+        ChannelFuture channelFuture = serverBootstrap.group(boss, worker)    // 1. 线程模型
+                .channel(NioServerSocketChannel.class)  // 2. IO模型
+                .childHandler(new ChannelInitializer<NioSocketChannel>() {  // 3. 连接读写处理逻辑
                     protected void initChannel(NioSocketChannel ch) {
-                        ch.pipeline().addLast(new StringDecoder());
-                        ch.pipeline().addLast(new SimpleChannelInboundHandler<String>() {
-                            @Override
-                            protected void channelRead0(ChannelHandlerContext ctx, String msg) {
-                                System.out.println(msg);
-                            }
-                        });
+                        ch.pipeline().addLast(new StringDecoder())
+                                .addLast(new SimpleChannelInboundHandler<String>() {
+                                    @Override
+                                    protected void channelRead0(ChannelHandlerContext ctx, String msg) {
+                                        System.out.println(msg);
+                                    }
+                                });
                     }
                 })
-                .bind(8080);
+                .bind(8080);// 4. 绑定端口
     }
 }
