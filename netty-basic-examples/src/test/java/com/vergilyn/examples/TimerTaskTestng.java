@@ -15,7 +15,7 @@ import org.testng.annotations.Test;
  * @date 2019-10-21
  */
 @Slf4j
-public class TimerTaskTest {
+public class TimerTaskTestng {
     private static int index = 0;
 
     @Test
