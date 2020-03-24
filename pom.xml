@@ -41,32 +41,37 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
 
-        <spring-boot-dependencies.version>2.1.2.RELEASE</spring-boot-dependencies.version>
-
-        <google-guava.version>24.1-jre</google-guava.version>
+        <spring-boot-dependencies.version>2.2.2.RELEASE</spring-boot-dependencies.version>
         <netty4.version>4.1.34.Final</netty4.version>
-        <projectlombok.version>1.18.4</projectlombok.version>
-        <alibaba-fastjson.version>1.2.54</alibaba-fastjson.version>
-        <apache-common-lang3.version>3.5</apache-common-lang3.version>
+
+        <projectlombok.version>1.18.10</projectlombok.version>
+        <google-guava.version>28.2-jre</google-guava.version>
+        <alibaba-fastjson.version>1.2.62</alibaba-fastjson.version>
+
+        <apache-common-lang3.version>3.9</apache-common-lang3.version>
         <apache-common-io.version>2.6</apache-common-io.version>
-        <testng.version>6.14.2</testng.version>
+        <apache-common-pool2.version>2.6.1</apache-common-pool2.version>
         <commons-beanutils.version>1.9.3</commons-beanutils.version>
+
+        <slf4j-api.version>1.7.29</slf4j-api.version>
+        <testng.version>7.1.0</testng.version>
+        <junit.version>4.13</junit.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-all</artifactId>
-                <version>${netty4.version}</version>
-            </dependency>
-
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot-dependencies.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty4.version}</version>
             </dependency>
 
             <dependency>
@@ -96,49 +101,47 @@
         </dependency>
 
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${testng.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${google-guava.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>${alibaba-fastjson.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${projectlombok.version}</version>
             <scope>provided</scope>
         </dependency>
 
+        <!-- utils -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${google-guava.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${apache-common-lang3.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${alibaba-fastjson.version}</version>
+        </dependency>
 
+        <!-- test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <!--<scope>test</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

@@ -1,4 +1,4 @@
-package com.vergilyn.examples;
+package com.vergilyn.examples.basic;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -25,8 +25,10 @@ public class NettyServer {
         ChannelFuture channelFuture = serverBootstrap.group(boss, worker)    // 1. 线程模型
                 .channel(NioServerSocketChannel.class)  // 2. IO模型
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {  // 3. 连接读写处理逻辑
+                    @Override
                     protected void initChannel(NioSocketChannel ch) {
-                        ch.pipeline().addLast(new StringDecoder())
+                        ch.pipeline()
+                                .addLast(new StringDecoder())
                                 .addLast(new SimpleChannelInboundHandler<String>() {
                                     @Override
                                     protected void channelRead0(ChannelHandlerContext ctx, String msg) {
@@ -35,6 +37,6 @@ public class NettyServer {
                                 });
                     }
                 })
-                .bind(8080);// 4. 绑定端口
+                .bind(INET_PORT);// 4. 绑定端口
     }
 }
