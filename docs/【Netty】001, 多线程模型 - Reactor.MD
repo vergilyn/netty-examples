@@ -1,4 +1,4 @@
-# 多线程模型 - Reactor
+# 【Netty】001, 多线程模型 - Reactor.MD
 + [Scalable IO in Java](http://gee.cs.oswego.edu/dl/cpjslides/nio.pdf)
 - [Netty中线程池NioEventLoopGroup初始化流程解析](https://www.jianshu.com/p/2e3ae43dc4cb)
 - [NIO学习--Reactor模型](https://blog.csdn.net/qq924862077/article/details/81026740)

@@ -39,13 +39,13 @@ public class MultiHandlerNettyServer {
                     protected void initChannel(NioSocketChannel ch) {
                         ch.pipeline()
                                 /* 调用顺序，特别 index:7 只打印了1次！
-                                    inbound >>>> index: 1
-                                    inbound >>>> index: 2
-                                    inbound >>>> index: 3
-                                    inbound & outbound >>>> index: 7
-                                    outbound >>>> index: 6
-                                    outbound >>>> index: 5
-                                    outbound >>>> index: 4
+                                    inbound >>>> index: 1, invoke-method: channelRead
+                                    inbound >>>> index: 2, invoke-method: channelRead
+                                    inbound >>>> index: 3, invoke-method: channelRead
+                                    inbound & outbound >>>> index: 7, invoke-method: channelRead
+                                    outbound >>>> index: 6, invoke-method: write
+                                    outbound >>>> index: 5, invoke-method: write
+                                    outbound >>>> index: 4, invoke-method: write
                                  */
 
                                 // inbound 正序调用
@@ -59,7 +59,9 @@ public class MultiHandlerNettyServer {
                                 .addLast(new CustomOutboundHandler5())
                                 .addLast(new CustomOutboundHandler6())
 
-                                // inbound & outbound
+                                /* inbound & outbound
+                                 * outbound 必须定义在最后一个 inbound前，所以此处只会用到 inbound。（待求证！！！）
+                                 */
                                 .addLast(new CustomInAndOutboundHandler7());
                     }
                 })
