@@ -10,6 +10,9 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringEncoder;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.vergilyn.examples.common.NettyConstants.INET_HOST;
+import static com.vergilyn.examples.common.NettyConstants.NettyThreadPrefix.Basic;
+
 /**
  * @author VergiLyn
  * @date 2019-04-15
@@ -25,11 +28,11 @@ public class NettyClient {
                 .handler(new ChannelInitializer<Channel>() {
                     @Override
                     protected void initChannel(Channel ch) {
-                        ch.pipeline().addLast(new StringEncoder());
+                        ch.pipeline().addLast("encoder", new StringEncoder());
                     }
                 });
 
-        Channel channel = bootstrap.connect("127.0.0.1", NettyServer.INET_PORT).channel();
+        Channel channel = bootstrap.connect(INET_HOST, Basic.inetPort).channel();
 
         while (true) {
             channel.writeAndFlush(new Date() + ": hello world!");

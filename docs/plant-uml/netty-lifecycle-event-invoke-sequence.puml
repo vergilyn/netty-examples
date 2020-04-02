@@ -1,0 +1,15 @@
+@startuml
+== client: connect ==
+
+netty_client -> netty_server: channel.connect(host, port)
+netty_server --> netty_server: inbound.channelRegistered(...)
+netty_server --> netty_server: inbound.channelActive(...)
+
+== client: send message ==
+netty_client -> netty_server: channel.writeAndFlush(msg)
+netty_server --> netty_server: inbound.channelRead(...)
+netty_server --> netty_server: inbound.channelReadComplete(...)
+
+
+
+@enduml

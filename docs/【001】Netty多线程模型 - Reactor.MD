@@ -1,4 +1,4 @@
-# 【Netty】001, 多线程模型 - Reactor.MD
+# 【001】Netty多线程模型 - Reactor.MD
 + [Scalable IO in Java](http://gee.cs.oswego.edu/dl/cpjslides/nio.pdf)
 - [Netty中线程池NioEventLoopGroup初始化流程解析](https://www.jianshu.com/p/2e3ae43dc4cb)
 - [NIO学习--Reactor模型](https://blog.csdn.net/qq924862077/article/details/81026740)
@@ -76,10 +76,10 @@ Proactor框架中用户定义的操作是在**实际操作之后调用**的。�
 
 2020-03-23 >>>>
 Netty中的所有handler都实现自ChannelHandler接口。  
-按照输出输出来分，分为ChannelInboundHandler、ChannelOutboundHandler两大类。
+按照输入输出来分，分为ChannelInboundHandler、ChannelOutboundHandler两大类。
 
-ChannelInboundHandler对从客户端发往服务器的报文进行处理，一般用来执行解码、读取客户端数据、进行业务处理等；  
-ChannelOutboundHandler对从服务器发往客户端的报文进行处理，一般用来进行编码、发送报文到客户端。
+**ChannelInboundHandler 对从客户端发往服务器的报文进行处理，一般用来执行解码、读取客户端数据、进行业务处理等；**    
+**ChannelOutboundHandler 对从服务器发往客户端的报文进行处理，一般用来进行编码、发送报文到客户端。**
 
 1、ChannelInboundHandler之间的传递，通过调用 ctx.fireChannelRead(msg) 实现；调用ctx.write(msg) 将传递到ChannelOutboundHandler。
 （InboundAdapter / OutboundAdapter 中基于模版方法可能已经调用 ctx.fireChannelRead()，所以**可能**不需要手动调用 ）
@@ -98,3 +98,27 @@ ChannelOutboundHandler对从服务器发往客户端的报文进行处理，一�
 > Netty中，可以注册多个handler。
 > ChannelInboundHandler按照注册的先后 **顺序执行**
 > ChannelOutboundHandler按照注册的先后顺序 **逆序执行**
+
+
+2020-04-02 >>>>
+**netty 有个最大的特性之一就是Handler可插拔**
+
+```java
+/* 比如在首次建立连接的时候，需要通过进行权限认证，在认证通过之后，就可以将此context移除，
+ * 下次pipeline在传播事件的时候就就不会调用到权限认证处理器
+ */
+public class AuthHandler extends SimpleChannelInboundHandler<ByteBuf> {
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf data) throws Exception {
+        if (verify(authDataPacket)) {
+            ctx.pipeline().remove(this);  // 回调 ChannelHandler#handlerRemoved(...)
+        } else {
+            ctx.close();
+        }
+    }
+
+    private boolean verify(ByteBuf byteBuf) {
+        //...
+    }
+}
+```

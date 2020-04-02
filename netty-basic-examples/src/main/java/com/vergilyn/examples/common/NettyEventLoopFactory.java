@@ -40,7 +40,7 @@ public class NettyEventLoopFactory {
     public static final int DEFAULT_IO_THREADS = Math.min(Runtime.getRuntime().availableProcessors() + 1, 32);
 
     public static EventLoopGroup eventLoopGroup(int threads, String threadFactoryName) {
-        ThreadFactory threadFactory = new DefaultThreadFactory(threadFactoryName, true);
+        ThreadFactory threadFactory = new DefaultThreadFactory(threadFactoryName);
         return shouldEpoll() ? new EpollEventLoopGroup(threads, threadFactory) :
                 new NioEventLoopGroup(threads, threadFactory);
     }

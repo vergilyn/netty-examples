@@ -1,4 +1,4 @@
-# 【Netty】002, Inbound & Outbound.MD
+# 【002】Netty, Inbound & Outbound.MD
 
 + [Stack Overflow上Netty作者Trustin Lee对inbound和outbound的解释](https://stackoverflow.com/questions/22354135/in-netty4-why-read-and-write-both-in-outboundhandler)
 
@@ -20,6 +20,9 @@ inbound是事件，outbound是操作（直接导致的事件）。
 而outbound事件是由应用程序主动请求而触发的事件，
 可以认为，outbound是指应用程序发起了某个操作。
 比如向socket写入数据，再比如从socket读取数据（注意是“读取”这个操作请求，而非“读完了”这个事件），这也解释了为什么ChannelOutboundHandler中会有read方法。
+
+
+inBound事件，最典型的就是读取数据流，加工处理；
 
 ## code
 
@@ -82,10 +85,10 @@ public class MultiHandlerNettyServer {
 @Override
 public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
    // 通过当前节点往下传播事件
-    ctx.fireChannelRead(msg);
+   ctx.fireChannelRead(msg);
 
    // 通过头节点往下传递事件
-    ctx.pipeline().fireChannelRead(msg);
+   ctx.pipeline().fireChannelRead(msg);
 }
 ```
 

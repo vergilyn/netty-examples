@@ -4,6 +4,7 @@ import com.vergilyn.examples.common.NettyEventLoopFactory;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandler;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -18,6 +19,8 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.vergilyn.examples.common.NettyConstants.NettyThreadPrefix.MultiHandler;
+
 /**
  *
  * @author vergilyn
@@ -25,13 +28,11 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class MultiHandlerNettyServer {
-    public static final int INET_PORT = 8081;
-    public static final String INET_HOST = "127.0.0.1";
-
     public static void main(String[] args) {
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         NioEventLoopGroup boss = new NioEventLoopGroup(1, new DefaultThreadFactory("NettyServerBoss"));
         NioEventLoopGroup worker = new NioEventLoopGroup(NettyEventLoopFactory.DEFAULT_IO_THREADS, new DefaultThreadFactory("NettyServerWork"));
+
         ChannelFuture channelFuture = serverBootstrap.group(boss, worker)    // 1. 线程模型
                 .channel(NioServerSocketChannel.class)  // 2. IO模型
                 .childHandler(new ChannelInitializer<NioSocketChannel>() {  // 3. 连接读写处理逻辑
@@ -49,23 +50,23 @@ public class MultiHandlerNettyServer {
                                  */
 
                                 // inbound 正序调用
-                                .addLast(new StringDecoder())
-                                .addLast(new CustomInboundHandler1())
-                                .addLast(new CustomInboundHandler2())
-                                .addLast(new CustomInboundHandler3())
+                                .addLast("decoder", new StringDecoder())
+                                .addLast("inbound-1", new CustomInboundHandler1())
+                                .addLast("inbound-2", new CustomInboundHandler2())
+                                .addLast("inbound-3", new CustomInboundHandler3())
 
                                 // outbound 倒序调用，且必须定义在最后一个Inbound之前
-                                .addLast(new CustomOutboundHandler4())
-                                .addLast(new CustomOutboundHandler5())
-                                .addLast(new CustomOutboundHandler6())
+                                .addLast("outbound-4", new CustomOutboundHandler4())
+                                .addLast("outbound-5", new CustomOutboundHandler5())
+                                .addLast("outbound-6", new CustomOutboundHandler6())
 
                                 /* inbound & outbound
                                  * outbound 必须定义在最后一个 inbound前，所以此处只会用到 inbound。（待求证！！！）
                                  */
-                                .addLast(new CustomInAndOutboundHandler7());
+                                .addLast("inbound-outbound-7", new CustomInAndOutboundHandler7());
                     }
                 })
-                .bind(INET_PORT);// 4. 绑定端口
+                .bind(MultiHandler.inetPort);// 4. 绑定端口
     }
 
     static interface IndexPrint {
@@ -83,6 +84,7 @@ public class MultiHandlerNettyServer {
     }
 
     @Slf4j
+    @ChannelHandler.Sharable
     static class CustomInboundHandler1 extends ChannelInboundHandlerAdapter implements IndexPrint  {
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -97,6 +99,7 @@ public class MultiHandlerNettyServer {
     }
 
     @Slf4j
+    @ChannelHandler.Sharable
     static class CustomInboundHandler2 extends ChannelInboundHandlerAdapter implements IndexPrint {
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -112,6 +115,7 @@ public class MultiHandlerNettyServer {
     }
 
     @Slf4j
+    @ChannelHandler.Sharable
     static class CustomInboundHandler3 extends ChannelInboundHandlerAdapter implements IndexPrint {
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -127,6 +131,7 @@ public class MultiHandlerNettyServer {
     }
 
     @Slf4j
+    @ChannelHandler.Sharable
     static class CustomOutboundHandler4 extends ChannelOutboundHandlerAdapter implements IndexPrint {
         @Override
         public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
@@ -143,6 +148,7 @@ public class MultiHandlerNettyServer {
     }
 
     @Slf4j
+    @ChannelHandler.Sharable
     static class CustomOutboundHandler5 extends ChannelOutboundHandlerAdapter implements IndexPrint {
         @Override
         public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
@@ -157,6 +163,7 @@ public class MultiHandlerNettyServer {
     }
 
     @Slf4j
+    @ChannelHandler.Sharable
     static class CustomOutboundHandler6 extends ChannelOutboundHandlerAdapter implements IndexPrint {
         @Override
         public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
@@ -171,6 +178,7 @@ public class MultiHandlerNettyServer {
     }
 
     @Slf4j
+    @ChannelHandler.Sharable
     static class CustomInAndOutboundHandler7 extends ChannelOutboundHandlerAdapter implements ChannelInboundHandler, IndexPrint {
 
         @Override

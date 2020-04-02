@@ -1,7 +1,6 @@
-package com.vergilyn.examples.handler.multi;
+package com.vergilyn.examples.packet;
 
 import java.time.LocalTime;
-import java.util.concurrent.TimeUnit;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -11,15 +10,16 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringEncoder;
 
 import static com.vergilyn.examples.common.NettyConstants.INET_HOST;
-import static com.vergilyn.examples.common.NettyConstants.NettyThreadPrefix.MultiHandler;
+import static com.vergilyn.examples.common.NettyConstants.NettyThreadPrefix.Packet;
+
 
 /**
  * @author vergilyn
- * @date 2020-03-23
+ * @date 2020-04-01
  */
-public class MultiHandlerNettyClient {
+public class PacketNettyClient {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         Bootstrap bootstrap = new Bootstrap();
         NioEventLoopGroup group = new NioEventLoopGroup();
 
@@ -32,9 +32,17 @@ public class MultiHandlerNettyClient {
                     }
                 });
 
-        Channel channel = bootstrap.connect(INET_HOST, MultiHandler.inetPort).channel();
+        Channel channel = bootstrap.connect(INET_HOST, Packet.inetPort).channel();
 
-        channel.writeAndFlush(MultiHandlerNettyClient.class.getSimpleName() + " send: " + LocalTime.now().toString());
-        TimeUnit.SECONDS.sleep(10);
+        int i = 0, limit = 100;
+        do {
+            LocalTime now = LocalTime.now();
+            String msg = String.format("{index: %d, time: %s}", i, now.toString());
+            channel.writeAndFlush(msg);
+
+            System.out.printf("client send: %s \r\n", msg);
+        }while (++i < limit);
+
+        channel.disconnect();
     }
 }
