@@ -5,23 +5,31 @@
 - [netty学习系列三：pipeline原理与事件处理](https://www.jianshu.com/p/607501fdeb92)
 
 ```
---- client
-client connected: 14:59:41.253
-client send: [0][14:59:43.255]
-invoke disconnect()...14:59:53.275
+#### client
+client connected: 10:44:26.194
+client send: [0][10:44:28.201]
+client disconnect: 10:44:38.217
 
+#### server init / ChannelPipeline create (client connect)
+> inbound-01, handlerAdded(), 10:44:26.302 
+> outbound-01, handlerAdded(), 10:44:26.306 
+> outbound-02, handlerAdded(), 10:44:26.306 
+> inbound-02, handlerAdded(), 10:44:26.307 
 
---- server
-LifecycleInboundHandler#handlerAdded(), 14:59:41.299
-LifecycleInboundHandler#channelRegistered(), 14:59:41.301
-LifecycleInboundHandler#channelActive(), 14:59:41.301
-LifecycleOutBoundHandler#read(), 14:59:41.301
+#### client channel.connect()
+> inbound-01, channelRegistered(), 10:44:26.307 
+> inbound-01, channelActive(), 10:44:26.308 
 
-LifecycleInboundHandler#channelRead(), 14:59:43.333  --- receive message: [0][14:59:43.255]
-LifecycleOutBoundHandler#write(), 14:59:43.333
-LifecycleOutBoundHandler#flush(), 14:59:43.334
-LifecycleInboundHandler#channelReadComplete(), 14:59:43.334
-LifecycleOutBoundHandler#read(), 14:59:43.334
+> outbound-02, read(), 10:44:26.308 
+> outbound-01, read(), 10:44:26.308 
+
+#### client send msg
+> inbound-01, channelRead(), 10:44:28.268 
+receive message: [0][10:44:28.201]
+> inbound-01, channelReadComplete(), 10:44:28.270 
+> outbound-02, read(), 10:44:28.271 
+> outbound-01, read(), 10:44:28.271 
+
 ```
 
 client 调用`channel.connect(host, port)` 会依次触发 server 的`channelRegistered() -> channelActive()`。

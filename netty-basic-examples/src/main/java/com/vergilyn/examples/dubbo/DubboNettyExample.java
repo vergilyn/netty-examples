@@ -1,17 +1,26 @@
 package com.vergilyn.examples.dubbo;
 
+import java.util.List;
+
 import com.vergilyn.examples.common.NettyEventLoopFactory;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.handler.codec.MessageToByteEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
  * <a href="https://github.com/apache/dubbo/blob/master/dubbo-remoting/dubbo-remoting-netty4/src/main/java/org/apache/dubbo/remoting/transport/netty4/NettyServer.java">
@@ -37,6 +46,7 @@ public class DubboNettyExample {
         EventLoopGroup bossGroup = NettyEventLoopFactory.eventLoopGroup(1, "NettyServerBoss");
         EventLoopGroup workerGroup = NettyEventLoopFactory.eventLoopGroup(NettyEventLoopFactory.DEFAULT_IO_THREADS, "NettyServerWorker");
 
+        int idleTimeout = 1; // config
         bootstrap.group(bossGroup, workerGroup)
                 .channel(NettyEventLoopFactory.serverSocketChannelClass())
                 .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
@@ -46,6 +56,25 @@ public class DubboNettyExample {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
+                                // inbound
+                                .addLast("decoder", new ByteToMessageDecoder() {
+                                    @Override
+                                    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)
+                                            throws Exception {
+                                    }
+                                })
+                                // outbound
+                                .addLast("encoder", new MessageToByteEncoder<Object>() {
+                                    @Override
+                                    protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out)
+                                            throws Exception {
+
+                                    }
+                                })
+                                // inbound & outbound
+                                .addLast("server-idle-handler",
+                                        new IdleStateHandler(0, 0, idleTimeout, MILLISECONDS))
+                                // inbound & outbound
                                 .addLast("handler", new CustomNettyServerHandler());
                     }
                 });
@@ -65,10 +94,30 @@ public class DubboNettyExample {
                 .channel(NettyEventLoopFactory.socketChannelClass());
 
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000);
+        int heartbeatInterval = 1;  // config
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
-                ch.pipeline().addLast(new CustomNettyClientHandler());
+                ch.pipeline()
+                        // inbound
+                        .addLast("decoder", new ByteToMessageDecoder(){
+                            @Override
+                            protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)
+                                    throws Exception {
+
+                            }
+                        })
+                        // outbound
+                        .addLast("encoder", new MessageToByteEncoder<Object>() {
+                            @Override
+                            protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
+
+                            }
+                        })
+                        // inbound & outbound
+                        .addLast("client-idle-handler", new IdleStateHandler(heartbeatInterval, 0, 0, MILLISECONDS))
+
+                        .addLast("handler", new CustomNettyClientHandler());
             }
         });
     }

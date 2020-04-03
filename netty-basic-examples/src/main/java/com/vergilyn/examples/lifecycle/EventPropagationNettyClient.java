@@ -35,7 +35,7 @@ public class EventPropagationNettyClient {
         sendMessage(0, channel);
 
         TimeUnit.SECONDS.sleep(10);
-        System.out.println("invoke disconnect()..." + LocalTime.now().toString());
+        System.out.println("client disconnect: " + LocalTime.now().toString());
         channel.deregister();
 
 //        TimeUnit.SECONDS.sleep(10);

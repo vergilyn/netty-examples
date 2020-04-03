@@ -2,9 +2,13 @@ package com.vergilyn.examples.common;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 
 /**
  * @author vergilyn
@@ -13,14 +17,13 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 public interface NettyConstants {
     String INET_HOST = "127.0.0.1";
 
-    int INET_PORT_PACKET = 8082;
-
     enum NettyThreadPrefix{
-        Basic(8080),
+        Simplex(8080),
         MultiHandler(8081),
         Sharable(8082),
         Packet(8083),
-        EventPropagation(8085);
+        EventPropagation(8084),
+        Duplex(8085);
 
         public final int inetPort;
 
@@ -44,5 +47,24 @@ public interface NettyConstants {
         return bootstrap.group(group).channel(NioSocketChannel.class);
     }
 
+    static void initCodecChannel(ServerBootstrap serverBootstrap){
+        serverBootstrap.childHandler(new ChannelInitializer<NioSocketChannel>() {
+            @Override
+            protected void initChannel(NioSocketChannel ch) throws Exception {
+                ch.pipeline().addLast("decoder", new StringDecoder())
+                        .addLast("encoder", new StringEncoder());
+            }
+        });
+    }
 
+    static void initCodecHandler(Bootstrap bootstrap){
+        bootstrap.handler(new ChannelInitializer<Channel>() {
+            @Override
+            protected void initChannel(Channel ch) {
+                ch.pipeline().addLast("decoder", new StringDecoder())  // inbound
+                        .addLast("encoder", new StringEncoder());  // outbound
+            }
+        });
+
+    }
 }
