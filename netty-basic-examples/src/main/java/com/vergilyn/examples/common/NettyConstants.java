@@ -1,5 +1,8 @@
 package com.vergilyn.examples.common;
 
+import java.time.LocalTime;
+import java.util.concurrent.TimeUnit;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -23,7 +26,8 @@ public interface NettyConstants {
         Sharable(8082),
         Packet(8083),
         EventPropagation(8084),
-        Duplex(8085);
+        Duplex(8085),
+        Write(8086);
 
         public final int inetPort;
 
@@ -66,5 +70,36 @@ public interface NettyConstants {
             }
         });
 
+    }
+
+    static void sleep(int time, TimeUnit unit, String msg){
+
+        try {
+            printf("sleep begin %d(%s), %s \r\n", time, unit.name(), msg);
+            if (time > 0){
+                unit.sleep(time);
+            }
+        } catch (InterruptedException e) {
+            // do nothing
+        }
+    }
+
+    static void print(String msg){
+        printLocalTime();
+        System.out.print(msg);
+    }
+
+    static void println(String msg){
+        printLocalTime();
+        System.out.println(msg);
+    }
+
+    static void printf(String format, Object... args){
+        printLocalTime();
+        System.out.printf(format, args);
+    }
+
+    static void printLocalTime(){
+        System.out.print("<" + LocalTime.now().toString() + "> ");
     }
 }

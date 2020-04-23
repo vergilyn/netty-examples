@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
@@ -27,6 +28,7 @@ public class DuplexNettyServer {
             @Override
             protected void initChannel(NioSocketChannel ch) throws Exception {
                 ch.pipeline()
+                        .addLast("frame-decoder", new LineBasedFrameDecoder(100))
                         .addLast("decoder", new StringDecoder())  // inbound
                         .addLast("encoder", new StringEncoder())  // outbound
                         .addLast("duplex", new SimpleChannelInboundHandler<String>() {
@@ -40,7 +42,7 @@ public class DuplexNettyServer {
                             protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
                                 System.out.println(msg);
 
-                                String resp = "server response: " + LocalTime.now().toString();
+                                String resp = String.format("server response: %s \r\n", LocalTime.now().toString());
                                 ByteBuf byteBuf = ctx.alloc().buffer();
                                 byteBuf.writeBytes(resp.getBytes());
                                 ctx.channel().writeAndFlush(byteBuf);
