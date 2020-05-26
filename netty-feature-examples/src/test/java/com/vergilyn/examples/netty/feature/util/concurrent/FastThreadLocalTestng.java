@@ -1,4 +1,4 @@
-package com.vergilyn.examples;
+package com.vergilyn.examples.netty.feature.util.concurrent;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;

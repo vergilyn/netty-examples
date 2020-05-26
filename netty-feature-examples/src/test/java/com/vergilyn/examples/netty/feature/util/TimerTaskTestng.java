@@ -1,4 +1,4 @@
-package com.vergilyn.examples;
+package com.vergilyn.examples.netty.feature.util;
 
 import java.util.Timer;
 import java.util.concurrent.Semaphore;
@@ -16,7 +16,6 @@ import org.testng.annotations.Test;
  */
 @Slf4j
 public class TimerTaskTestng {
-    private static int index = 0;
 
     @Test
     public void nettyTimerTask() throws InterruptedException {
@@ -27,6 +26,7 @@ public class TimerTaskTestng {
             public void run(Timeout timeout) throws Exception {
                 log.info("...run...");
 
+                // 结束时候再次注册
                 // 可以理解成 递归，循环执行TimerTask
                 timer.newTimeout(this, 0, TimeUnit.MILLISECONDS);
             }
