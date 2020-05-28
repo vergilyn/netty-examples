@@ -24,7 +24,9 @@ public class EventPropagationNettyClient {
         bootstrap.handler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
-                ch.pipeline().addLast("encoder", new StringEncoder());
+                ch.pipeline().addLast("encoder", new StringEncoder())
+                        .addLast("inbound-01", new EventPropagationNettyServer.PropagationInboundHandler("server"))
+                        .addLast("outbound-01", new EventPropagationNettyServer.PropagationOutBoundHandler("server"));
             }
         });
 

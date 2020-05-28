@@ -27,7 +27,8 @@ public interface NettyConstants {
         Packet(8083),
         EventPropagation(8084),
         Duplex(8085),
-        Write(8086);
+        Write(8086),
+        Handler_IdleState(8087);
 
         public final int inetPort;
 
