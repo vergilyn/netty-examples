@@ -46,7 +46,7 @@
         <netty4.version>4.1.48.Final</netty4.version>
 
         <projectlombok.version>1.18.10</projectlombok.version>
-        <google-guava.version>28.2-jre</google-guava.version>
+        <google-guava.version>29.0-jre</google-guava.version>
         <fasterxml-jackson.version>2.11.0</fasterxml-jackson.version>
 
         <apache-common-lang3.version>3.9</apache-common-lang3.version>
