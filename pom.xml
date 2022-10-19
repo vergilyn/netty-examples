@@ -47,7 +47,7 @@
 
         <projectlombok.version>1.18.10</projectlombok.version>
         <google-guava.version>28.2-jre</google-guava.version>
-        <fasterxml-jackson.version>2.11.0</fasterxml-jackson.version>
+        <fasterxml-jackson.version>2.13.4</fasterxml-jackson.version>
 
         <apache-common-lang3.version>3.9</apache-common-lang3.version>
         <apache-common-io.version>2.6</apache-common-io.version>
